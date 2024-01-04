@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache'
 
 import { connectToDatabase } from '@/lib/database'
 import User from '@/lib/database/models/user.model'
-import Order from '@/lib/database/models/order.model'
 import Event from '@/lib/database/models/event.model'
 import { handleError } from '@/lib/utils'
 
@@ -34,18 +33,6 @@ export async function getUserById(userId: string) {
   }
 }
 
-export async function updateUser(clerkId: string, user: UpdateUserParams) {
-  try {
-    await connectToDatabase()
-
-    const updatedUser = await User.findOneAndUpdate({ clerkId }, user, { new: true })
-
-    if (!updatedUser) throw new Error('User update failed')
-    return JSON.parse(JSON.stringify(updatedUser))
-  } catch (error) {
-    handleError(error)
-  }
-}
 
 export async function deleteUser(clerkId: string) {
   try {
@@ -67,7 +54,7 @@ export async function deleteUser(clerkId: string) {
       ),
 
       // Update the 'orders' collection to remove references to the user
-      Order.updateMany({ _id: { $in: userToDelete.orders } }, { $unset: { buyer: 1 } }),
+      // Order.updateMany({ _id: { $in: userToDelete.orders } }, { $unset: { buyer: 1 } }),
     ])
 
     // Delete user
